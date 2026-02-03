@@ -5,8 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.example.listapp.data.repo.ItemRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,23 +23,26 @@ class HomeViewModel @Inject constructor(
     val state = _state.asStateFlow()
 
     init {
-        fetchData()
-    }
-
-    fun fetchData() {
         viewModelScope.launch(Dispatchers.IO) {
             _state.update {
                 it.copy(isLoading = true)
             }
+            repository.loadAndSaveAllItems()
+        }
+        viewModelScope.launch(Dispatchers.IO) {
+            delay(1000)
             try {
-                val allItems = repository.getAllItems()
-                val items = allItems.toItemDetailsList()
-                _state.update {
-                    it.copy(
-                        showError = false,
-                        items = items,
-                    )
-                }
+                repository.observeAllItems()
+                    .distinctUntilChanged()
+                    .collect { items ->
+                        _state.update {
+                            it.copy(
+                                showError = false,
+                                isLoading = false,
+                                items = items?.toItemDetailsList(),
+                            )
+                        }
+                    }
             } catch (_: Exception) {
                 _state.update {
                     it.copy(
@@ -50,6 +55,12 @@ class HomeViewModel @Inject constructor(
                     it.copy(isLoading = false)
                 }
             }
+        }
+    }
+
+    fun onItemDelete(itemId: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.deleteItemById(itemId)
         }
     }
 

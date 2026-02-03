@@ -1,6 +1,6 @@
 package com.example.listapp.ui.viewmodel
 
-import com.example.listapp.data.remote.ListItemResponse
+import com.example.listapp.data.local.Item
 
 data class ItemDetails(
     val userId: Int,
@@ -9,14 +9,14 @@ data class ItemDetails(
     val body: String,
 )
 
-fun ListItemResponse.toItemDetails() = ItemDetails(
+fun Item.toItemDetails() = ItemDetails(
     userId = this.userId,
     id = this.id,
     title = this.title,
     body = this.body,
 )
 
-fun List<ListItemResponse>.toItemDetailsList(): List<ItemDetails> {
+fun List<Item>.toItemDetailsList(): List<ItemDetails> {
     val list = mutableListOf<ItemDetails>()
     this.forEach {
         list.add(it.toItemDetails())

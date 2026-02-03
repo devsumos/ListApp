@@ -1,13 +1,9 @@
 package com.example.listapp
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavType
@@ -46,6 +42,7 @@ class MainActivity : ComponentActivity() {
                                     route = Screen.ItemDetailsScreen.route + "?itemId=${itemId}"
                                 )
                             },
+                            onItemDelete = viewModel::onItemDelete
                         )
                     }
                     composable(
@@ -60,7 +57,7 @@ class MainActivity : ComponentActivity() {
                         val viewModel =
                             hiltViewModel<ItemDetailsViewModel, ItemDetailsViewModel.Factory> { factory ->
                                 factory.create(
-                                    itemId = it.arguments?.getInt("itemId") ?:-1
+                                    itemId = it.arguments?.getInt("itemId") ?: -1
                                 )
                             }
                         val state = viewModel.state.collectAsStateWithLifecycle().value

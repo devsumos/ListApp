@@ -1,5 +1,7 @@
 package com.example.listapp.di
 
+import android.app.Application
+import com.example.listapp.data.local.AppDatabase
 import com.example.listapp.data.remote.ListApi
 import com.example.listapp.data.repo.ItemRepository
 import dagger.Module
@@ -28,7 +30,13 @@ object Provider {
 
     @Provides
     @Singleton
+    fun provideAppDatabase(application: Application) =
+        AppDatabase.getInstance(application)
+
+    @Provides
+    @Singleton
     fun provideItemRepository(
-        api: ListApi
-    ): ItemRepository = ItemRepository(api)
+        api: ListApi,
+        database: AppDatabase,
+    ): ItemRepository = ItemRepository(api, database)
 }

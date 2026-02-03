@@ -1,6 +1,7 @@
 package com.example.listapp.ui.screen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,10 +11,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
@@ -40,27 +42,33 @@ fun HomeScreen(
     isLoading: Boolean,
     showError: Boolean,
     onItemClick: (Int) -> Unit,
+    onItemDelete: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
         modifier = modifier,
     ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier.padding(paddingValues),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
+        Box(modifier = Modifier.padding(paddingValues)) {
             if (isLoading) {
-                item {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        LinearProgressIndicator()
-                    }
+                Box(modifier = Modifier.fillMaxSize()) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center)
+                    )
                 }
             } else if (items?.isNotEmpty() == true) {
-                itemsIndexed(items = items) { index, item ->
-                    SwipeableItem(item = item)
-                    if (index != items.size) {
-                        HorizontalDivider()
+                LazyColumn(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    items(items, { item: ItemDetails -> item.id }) { item ->
+                        SwipeableItem(
+                            item = item,
+                            onItemClick = onItemClick,
+                            onItemDelete = onItemDelete,
+                        )
+                        if (item != items.last()) {
+                            HorizontalDivider()
+                        }
                     }
                 }
             }
@@ -71,6 +79,8 @@ fun HomeScreen(
 @Composable
 fun SwipeableItem(
     item: ItemDetails,
+    onItemClick: (Int) -> Unit,
+    onItemDelete: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val modelUrl = remember(item.id) {
@@ -79,11 +89,11 @@ fun SwipeableItem(
     val swipeToDismissBoxState = rememberSwipeToDismissBoxState(
         confirmValueChange = {
             if (it == SwipeToDismissBoxValue.StartToEnd) {
-
+                onItemDelete(item.id)
             }
-            // Reset item when toggling done status
-            it != SwipeToDismissBoxValue.StartToEnd
-        }
+            false
+        },
+        positionalThreshold = { 0.5f }
     )
 
     SwipeToDismissBox(
@@ -94,7 +104,7 @@ fun SwipeableItem(
                 SwipeToDismissBoxValue.StartToEnd -> {
                     Icon(
                         imageVector = Icons.Default.Delete,
-                        contentDescription = "Remove item",
+                        contentDescription = null,
                         modifier = Modifier
                             .fillMaxSize()
                             .background(Color.Red)
@@ -113,6 +123,9 @@ fun SwipeableItem(
         Row(
             modifier = modifier
                 .background(Color.White)
+                .clickable {
+                    onItemClick(item.id)
+                }
                 .padding(horizontal = 20.dp, vertical = 30.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
