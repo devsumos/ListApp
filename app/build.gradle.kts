@@ -35,6 +35,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    kotlinOptions {
+        jvmTarget = "11"
+    }
     buildFeatures {
         compose = true
     }
@@ -56,6 +59,8 @@ dependencies {
     implementation(libs.dagger.hilt.navigation.fragment)
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.gson)
+    implementation(libs.coil)
+    implementation(libs.coil.network)
     ksp(libs.dagger.hilt.android.compiler)
     implementation(libs.gson)
     implementation(libs.androidx.material3)
