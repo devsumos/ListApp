@@ -1,6 +1,7 @@
 package com.example.listapp.data.repo
 
 import com.example.listapp.data.local.AppDatabase
+import com.example.listapp.data.local.Item
 import com.example.listapp.data.remote.ListApi
 import com.example.listapp.data.remote.toItemEntity
 import javax.inject.Inject
@@ -20,6 +21,8 @@ class ItemRepository @Inject constructor(
     fun observeAllItems() = itemDao.observeAllItems()
 
     suspend fun getItemById(id: Int) = itemDao.getItemById(id)
+
+    suspend fun updateItem(item: Item) = itemDao.update(item)
 
     suspend fun deleteItemById(itemId: Int) = itemDao.deleteItemById(itemId)
 }

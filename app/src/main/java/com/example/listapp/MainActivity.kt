@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.LaunchedEffect
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavType
@@ -36,7 +37,6 @@ class MainActivity : ComponentActivity() {
                         HomeScreen(
                             items = state.items,
                             isLoading = state.isLoading,
-                            showError = state.showError,
                             onItemClick = { itemId ->
                                 navController.navigate(
                                     route = Screen.ItemDetailsScreen.route + "?itemId=${itemId}"
@@ -62,10 +62,19 @@ class MainActivity : ComponentActivity() {
                             }
                         val state = viewModel.state.collectAsStateWithLifecycle().value
                         ItemDetailsScreen(
-                            item = state.itemDetails,
+                            itemTitle = state.itemTitle,
+                            itemId = state.itemId,
+                            itemBody = state.itemBody,
                             isLoading = state.isLoading,
-                            showError = state.showError,
+                            onTitleChange = viewModel::onTitleChange,
+                            onBodyChange = viewModel::onBodyChange,
+                            onSave = viewModel::onSave,
                         )
+                        LaunchedEffect(state.navigateBack) {
+                            if (state.navigateBack) {
+                                navController.popBackStack()
+                            }
+                        }
                     }
                 }
             }

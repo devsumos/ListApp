@@ -30,26 +30,18 @@ class HomeViewModel @Inject constructor(
             repository.loadAndSaveAllItems()
         }
         viewModelScope.launch(Dispatchers.IO) {
-            delay(1000)
             try {
                 repository.observeAllItems()
                     .distinctUntilChanged()
                     .collect { items ->
                         _state.update {
                             it.copy(
-                                showError = false,
                                 isLoading = false,
                                 items = items?.toItemDetailsList(),
                             )
                         }
                     }
             } catch (_: Exception) {
-                _state.update {
-                    it.copy(
-                        showError = true,
-                    )
-                }
-
             } finally {
                 _state.update {
                     it.copy(isLoading = false)
@@ -67,6 +59,5 @@ class HomeViewModel @Inject constructor(
     data class State(
         val items: List<ItemDetails>? = null,
         val isLoading: Boolean = false,
-        val showError: Boolean = false,
     )
 }

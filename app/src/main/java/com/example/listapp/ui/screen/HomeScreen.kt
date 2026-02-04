@@ -18,7 +18,6 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
@@ -40,7 +39,6 @@ import com.example.listapp.ui.viewmodel.ItemDetails
 fun HomeScreen(
     items: List<ItemDetails>?,
     isLoading: Boolean,
-    showError: Boolean,
     onItemClick: (Int) -> Unit,
     onItemDelete: (Int) -> Unit,
     modifier: Modifier = Modifier,
@@ -149,7 +147,7 @@ fun SwipeableItem(
                 Text(
                     text = item.body,
                     color = Color.Black,
-                    maxLines = 3,
+                    maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
             }
