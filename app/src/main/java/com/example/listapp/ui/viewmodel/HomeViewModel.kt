@@ -5,10 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.example.listapp.data.repo.ItemRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -33,11 +33,12 @@ class HomeViewModel @Inject constructor(
             try {
                 repository.observeAllItems()
                     .distinctUntilChanged()
+                    .map { it?.toItemDetailsList() }
                     .collect { items ->
                         _state.update {
                             it.copy(
                                 isLoading = false,
-                                items = items?.toItemDetailsList(),
+                                items = items,
                             )
                         }
                     }
